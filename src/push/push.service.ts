@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, InsertResult } from 'typeorm';
 import { AppDeviceTokenEntity, WebDomainEntity, AppVersionEntity } from './push.entity';
+import { AppDeviceTokenDTO } from "./push.dto";
 
 // var FCM = require("fcm-node");
 // import serverKey from "./push.key.json"; //put your server key here
@@ -24,13 +25,13 @@ export class PushService {
     /**
      * token 저장
      */
-    async appDeviceTokenSave(appDeviceTokenEntity: AppDeviceTokenEntity): Promise<InsertResult> {
+    async appDeviceTokenSave(appDeviceTokenDTO: AppDeviceTokenDTO): Promise<InsertResult> {
         // console.log(`_tokenName=${JSON.stringify(appDeviceTokenEntity)}`);
         const appDeviceToken = await this.appDeviceTokenRepository.createQueryBuilder()
             .insert()
             .into(AppDeviceTokenEntity)
             .values([
-                { tokenName: appDeviceTokenEntity.tokenName, useYn: true, createdAt: new Date() }
+                { tokenName: appDeviceTokenDTO.tokenName, useYn: true, createdAt: new Date() }
             ])
             .execute();
         // console.log(`appDeviceToken=${JSON.stringify(appDeviceToken)} is data insert success`);

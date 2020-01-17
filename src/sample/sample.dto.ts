@@ -1,9 +1,17 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class CreateCatDto {
-    readonly name: string;
-    readonly age: number;
-    readonly breed: string;
+    @ApiProperty()
+    name: string;
+
+    @ApiProperty()
+    age: number;
+
+    @ApiProperty()
+    breed: string;
 }
 
 export class ListAllEntities {
+    @ApiProperty()
     readonly limit: string;
 }

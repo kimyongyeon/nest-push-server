@@ -1,8 +1,14 @@
-import { Controller, Get, Post, HttpCode, Header, Redirect, Query, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, HttpCode, Header, Body, UseInterceptors, CacheInterceptor, CacheTTL, CacheKey } from '@nestjs/common';
 import { PushService } from './push.service';
-import { AppDeviceTokenEntity, WebDomainEntity, AppVersionEntity } from './push.entity';
 import { InsertResult } from 'typeorm';
+import { AppDeviceTokenDTO } from './push.dto';
+import { ApiTags, ApiHeader } from '@nestjs/swagger/dist';
 
+@ApiHeader({
+    name: 'Push API',
+    description: 'Push API 시작 controller',
+})
+@ApiTags('api')
 @Controller('api')
 export class PushController {
 
@@ -15,10 +21,10 @@ export class PushController {
     @Post('/clientTokenSave')
     @HttpCode(204)
     @Header('Cache-Control', 'none')
-    async clientTokenSave(@Body() appDeviceTokenEntity: AppDeviceTokenEntity): Promise<string | InsertResult> {
+    async clientTokenSave(@Body() appDeviceTokenDTO: AppDeviceTokenDTO): Promise<string | InsertResult> {
         // console.log(`token=${JSON.stringify(appDeviceTokenEntity)} param success!`);
         const result = await this.pushService
-            .appDeviceTokenSave(appDeviceTokenEntity)
+            .appDeviceTokenSave(appDeviceTokenDTO)
             .catch(e => {
                 const errorMessage = `error:${e}`;
                 console.log(errorMessage);
@@ -30,15 +36,17 @@ export class PushController {
     /**
     * token 조회
     */
+    @CacheKey('token_key') // 글로벌 캐시 무시
+    @CacheTTL(20)  // 글로벌 캐시 무시
     @Get('/token')
     async token() {
         return this.pushService
             .findToken()
             .catch(e => {
-            const errorMessage = `error:${e}`;
-            console.log(errorMessage);
-            return errorMessage;
-        });
+                const errorMessage = `error:${e}`;
+                console.log(errorMessage);
+                return errorMessage;
+            });
     }
 
     /**
@@ -56,6 +64,9 @@ export class PushController {
     /**
      * App 버전 정보 조회 
      */
+    // @UseInterceptors(CacheInterceptor) // 글로벌 캐시 대처
+    @CacheKey('appLastVersion_key') // 글로벌 캐시 무시
+    @CacheTTL(20)  // 글로벌 캐시 무시
     @Get('/appLastVersion')
     appVersion() {
         return this.pushService
@@ -70,6 +81,8 @@ export class PushController {
     /**
      * Tplace 웹 도메인 정보 조회 
      */
+    @CacheKey('tplaceWebDomain_key') // 글로벌 캐시 무시
+    @CacheTTL(20)  // 글로벌 캐시 무시
     @Get('/tplaceWebDomain')
     tplaceWebDomain() {
         return this.pushService

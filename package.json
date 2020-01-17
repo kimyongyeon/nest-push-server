@@ -22,13 +22,20 @@
   "dependencies": {
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
+    "@nestjs/cqrs": "^6.1.0",
     "@nestjs/platform-express": "^6.7.2",
+    "@nestjs/schedule": "^0.1.1",
+    "@nestjs/swagger": "^4.1.12",
     "@nestjs/typeorm": "^6.2.0",
+    "cache-manager": "^2.10.1",
+    "compression": "^1.7.4",
     "fcm-node": "^1.5.2",
+    "hbs": "^4.1.0",
     "mysql": "^2.17.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
+    "swagger-ui-express": "^4.1.2",
     "typeorm": "^0.2.22"
   },
   "devDependencies": {
