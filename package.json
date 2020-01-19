@@ -28,6 +28,8 @@
     "@nestjs/swagger": "^4.1.12",
     "@nestjs/typeorm": "^6.2.0",
     "cache-manager": "^2.10.1",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.0",
     "compression": "^1.7.4",
     "fcm-node": "^1.5.2",
     "hbs": "^4.1.0",

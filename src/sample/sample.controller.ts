@@ -1,60 +1,91 @@
-import { Controller, Get, Post, HttpCode, Header, Redirect, Query, Param, Body } from '@nestjs/common';
-import { CreateCatDto, ListAllEntities } from './sample.dto';
-import { SampleService } from './sample.service';
+import {
+  Controller,
+  Get,
+  Post,
+  HttpCode,
+  Header,
+  Redirect,
+  Query,
+  Param,
+  Body,
+  HttpException,
+  HttpStatus,
+  UseInterceptors,
+  UsePipes
+} from "@nestjs/common";
+import { CreateCatDto, ListAllEntities } from "./sample.dto";
+import { SampleService } from "./sample.service";
+import { LoggingInterceptor } from "../common/logging.interceptor";
+import { ValidationPipe } from "src/common/validation.pipe";
 
-@Controller('sample')
+@Controller("sample")
+// @UseInterceptors(LoggingInterceptor)
 export class SampleController {
+  constructor(private readonly sampleService: SampleService) {}
 
-    constructor(private readonly sampleService: SampleService) { }
+  @Get('forbidden')
+  async findException() {
+    throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
+  }
 
-    @Get('/write')
-    @HttpCode(204)
-    @Header('Cache-Control', 'none')
-    write(@Query('sampleName') sampleName): string {
-        return this.sampleService.write(sampleName);
-    }
+  @Get('customForbidden')
+  async findException2() {
+    throw new HttpException(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: "This is a custom message"
+      },
+      403
+    );
+  }
 
-    @Get('edit')
-    edit(@Query('sampleName') sampleName): string {
-        return this.sampleService.edit(sampleName);
-    }
+  @Get("/write")
+  @HttpCode(204)
+  @Header("Cache-Control", "none")
+  write(@Query("sampleName") sampleName): string {
+    return this.sampleService.write(sampleName);
+  }
 
-    @Get('read')
-    findquery(@Query('sampleName') sampleName): string {
-        return this.sampleService.read(sampleName);
-    }
+  @Get("edit")
+  edit(@Query("sampleName") sampleName): string {
+    return this.sampleService.edit(sampleName);
+  }
 
-    @Get('list')
-    findAll(@Query('sampleName') sampleName): string {
-        return this.sampleService.list() + "";
-    }
+  @Get("read")
+  findquery(@Query("sampleName") sampleName): string {
+    return this.sampleService.read(sampleName);
+  }
 
-    @Get('/redirect')
-    @Redirect('https://nestjs.com', 301)
-    redirect() {
-        return;
-    }
+  @Get("list")
+  findAll(@Query("sampleName") sampleName): string {
+    return this.sampleService.list() + "";
+  }
 
-    @Post()
-    async create(@Body() createCatDto: CreateCatDto) {
-        return 'This action adds a new cat';
-    }   
+  @Get("/redirect")
+  @Redirect("https://nestjs.com", 301)
+  redirect() {
+    return;
+  }
 
-    @Get()
-    querySample(@Query() query: ListAllEntities) {
-        return `This action returns all cats (limit: ${query.limit} items)`;
-    }
+  @Post()
+  @UsePipes(new ValidationPipe())
+  async create(@Body() createCatDto: CreateCatDto) {
+    return `This action adds a new cat = ${createCatDto}`;
+  }
 
-    @Get(':id')
-    findOnes(@Param() params): string {
-        console.log(params.id);
-        return `This action returns a #${params.id} cat`;
-    }
+  @Get()
+  querySample(@Query(new ValidationPipe()) query: ListAllEntities) {
+    return `This action returns all cats (limit: ${query.limit} items)`;
+  }
 
-    @Get(':id')
-    findOne(@Param('id') id): string {
-        return `This action returns a #${id} cat`;
-    }
+  @Get(":id")
+  findOnes(@Param() params): string {
+    console.log(params.id);
+    return `This action returns a #${params.id} cat`;
+  }
 
-
+  @Get(":id")
+  findOne(@Param("id") id): string {
+    return `This action returns a #${id} cat`;
+  }
 }
